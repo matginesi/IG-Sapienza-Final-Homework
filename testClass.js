@@ -79,8 +79,9 @@ for(var i=0; i<100; i++)
 }
 
 /*
-0 1 2 3 4 5
-6 7 8 9 1011
+0  1  2  3  4  5
+6  7  8  9  10 11
+12
 */
 function valueToXY(value, max_x, max_y)
 {
