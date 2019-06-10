@@ -5,7 +5,8 @@ var renderer = new THREE.WebGLRenderer(antialias=true, precision="mediump");
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-
+var maxX = 100;
+var maxY = 100;
 var globalBlockContainer = [];
 
 function OBJ(type, dim, pos, rot, buffer)
@@ -48,14 +49,14 @@ function OBJ(type, dim, pos, rot, buffer)
                 break;
             }
 
-            
+            /*
             this.material = new THREE.MeshPhongMaterial({
                     flatShading: THREE.FlatShading,
                     transparent: true,
                     opacity: 0.58
             });
-            
-            //this.material = new THREE.MeshLambertMaterial();  // faster!
+            */
+            this.material = new THREE.MeshLambertMaterial();  // faster!
             this.material.color.setHex( col );
         break;
     }
@@ -86,16 +87,16 @@ camera.rotation.set(0,0,0);
 //camera.rotation.y = - Math.PI / 4;
 //camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) );
 
-var rndData = generatePerlinNoise(100, 100);
+var rndData = generatePerlinNoise(maxX, maxY);
 for(var i=0 in rndData) rndData[i] = Math.floor(0.6 + rndData[i] * 12);  
-for(var i=0; i<100; i++)
+for(var i=0; i<maxX; i++)
 {
-    for(var j=0; j<100; j++)
+    for(var j=0; j<maxY; j++)
     {
         var block = new OBJ(
-            rndData[j + i*100],
+            rndData[j + i*maxX],
             [1,1,1],
-            [i, rndData[j + i*100], j],
+            [i, rndData[j + i*maxX], j],
             [0, 0, 0],
             globalBlockContainer);  
     }

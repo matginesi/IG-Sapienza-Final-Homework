@@ -1,14 +1,17 @@
 var THREE = require('three');
-var perlin = require('perlin-noise');
+var PERLIN = require('perlin-noise');
 
-function OBJ(type, dim, pos, rot, buffer, i, j)
+var globalBlockContainer = [];
+
+function OBJ(type, dim, pos, rot, buffer)
 {
     this.type = type;
     this.dim = dim;
     this.pos = pos;
     this.rot = rot;
 
-    this.geometry = new THREE.BoxGeometry(this.dim[0], this.dim[1], this.dim[2]);
+    this.geometry = new THREE.BoxBufferGeometry(this.dim[0], this.dim[1], this.dim[2]);
+    //this.geometry = new THREE.BoxGeometry(this.dim[0], this.dim[1], this.dim[2]);
     var col = 0xFFFFFF;
 
     switch(this.type)
@@ -22,25 +25,32 @@ function OBJ(type, dim, pos, rot, buffer, i, j)
                 break;
 
                 case (1):
-                    col = 0xBB5000;
-                break;
                 case (2):
-                    col = 0x22AA00;
-                break;
                 case (3):
-                    col = 0x00FF00;
+                    col = 0xBBAA00;
                 break;
+                case (4):
+                case (5):
+                    col = 0x10AA50;
+                break;
+                case (6):
+                case (7):
+                    col = 0xBB5010;
+                break;
+                
                 default:
                     col = 0xDDDDDD;
                 break;
             }
 
+            
             this.material = new THREE.MeshPhongMaterial({
                     flatShading: THREE.FlatShading,
                     transparent: true,
-                    opacity: 0.9
+                    opacity: 0.58
             });
-
+            
+            //this.material = new THREE.MeshLambertMaterial();  // faster!
             this.material.color.setHex( col );
         break;
     }
@@ -49,18 +59,12 @@ function OBJ(type, dim, pos, rot, buffer, i, j)
     this.cube.position.set(this.pos[0], this.pos[1], this.pos[2]);
     this.cube.rotation.set(this.rot[0], this.rot[1], this.rot[2]);
 
-    buffer[[i][j]] = this.cube;
+    buffer.push(this.cube);
     this.ID = buffer.length;
 }
 
-
-var maxX = 100;
-var maxY = 100;
-var globalBlockContainer = [[maxX], [maxY]];
-
-
-var rndData = perlin.generatePerlinNoise(100, 100);
-for(var i=0 in rndData) rndData[i] *= 6;  
+var rndData = PERLIN.generatePerlinNoise(100, 100);
+for(var i=0 in rndData) rndData[i] = Math.floor(0.6 + rndData[i] * 12);  
 for(var i=0; i<100; i++)
 {
     for(var j=0; j<100; j++)
@@ -70,8 +74,18 @@ for(var i=0; i<100; i++)
             [1,1,1],
             [i, rndData[j + i*100], j],
             [0, 0, 0],
-            globalBlockContainer, i, j);  
+            globalBlockContainer);  
     }
 }
 
-console.log(rndData);
+/*
+0 1 2 3 4 5
+6 7 8 9 1011
+*/
+function valueToXY(value, max_x, max_y)
+{
+    var r = [Math.floor(value/max_x), Math.floor(value/(max_x*max_y))];
+    return r;
+}
+console.log(valueToXY(5, 2, 2));
+//console.log(globalBlockContainer);
