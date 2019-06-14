@@ -81,12 +81,26 @@ for(var i=0; i<100; i++)
 /*
 0  1  2  3  4  5
 6  7  8  9  10 11
-12
+12 13 14 15 16 17
+18 19 20 21 22 23
+24 25 26 27 28 29
+
+maxX = 6
+maxY = 5
+
+v=16, x=4, y=3
 */
 function valueToXY(value, max_x, max_y)
 {
-    var r = [Math.floor(value/max_x), Math.floor(value/(max_x*max_y))];
+    var r = [Math.floor(value%max_x), Math.floor((value%max_x)%max_y)];
     return r;
 }
-console.log(valueToXY(5, 2, 2));
+
+function XYtoValue(x, y, max_x)
+{
+    var r = x*max_x + y;
+    return r;
+}
+console.log(valueToXY(7, 6, 5));
+console.log(XYtoValue(1,1,6,5));
 //console.log(globalBlockContainer);

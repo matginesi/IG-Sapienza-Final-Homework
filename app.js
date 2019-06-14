@@ -1,13 +1,69 @@
-var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
-var renderer = new THREE.WebGLRenderer(antialias=true, precision="mediump");
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
-
 var maxX = 100;
 var maxY = 100;
 var globalBlockContainer = [];
+
+var scene;
+var camera;
+var renderer;
+
+document.body.appendChild( stats.dom );
+
+function init()
+{
+    scene = new THREE.Scene();
+    // 0.1, 1000
+    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 100 );
+
+    renderer = new THREE.WebGLRenderer(
+        antialias=false, 
+        precision="mediump", 
+        preserveDrawingBuffer="false",
+        powerPreference="high-performance");
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.gammaFactor = 2.2;
+    renderer.gammaOutPut = true;
+    document.body.appendChild( renderer.domElement );
+
+    //LIGHTNING
+    //first point light
+    light = new THREE.PointLight(0xffffff, 1, 4000);
+    light.position.set(0, 0, 0);
+    //the second one
+    light_two = new THREE.PointLight(0xffffff, 1, 4000);
+    light_two.position.set(-100, 800, 800);
+    //And another global lightning some sort of cripple GL
+    lightAmbient = new THREE.AmbientLight(0x404040);
+    scene.add(light, light_two, lightAmbient);
+
+    camera.position.set(30,20,60);
+    camera.rotation.set(0,0,0);
+    //camera.position.set( -30,30,30 );
+    //camera.rotation.order = 'YXZ';
+    //camera.rotation.y = - Math.PI / 4;
+    //camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) );
+
+
+    var rndData = generatePerlinNoise(maxX, maxY);
+    var block = [];
+    for(var i=0 in rndData) rndData[i] = Math.floor(0.6 + rndData[i] * 12);  
+    for(var i=0; i<maxX; i++)
+    {
+        for(var j=0; j<maxY; j++)
+        {
+            //var block = new OBJ(
+            block.push(new OBJ(
+                rndData[j + i*maxX],
+                [1,1,1],
+                [i, rndData[j + i*maxX], j],
+                [0, 0, 0],
+                globalBlockContainer));
+        }
+    }
+
+    for(var i=0; i<globalBlockContainer.length; i++)
+        scene.add(globalBlockContainer[i]);
+}
 
 function OBJ(type, dim, pos, rot, buffer)
 {
@@ -16,7 +72,7 @@ function OBJ(type, dim, pos, rot, buffer)
     this.pos = pos;
     this.rot = rot;
 
-    this.geometry = new THREE.BoxBufferGeometry(this.dim[0], this.dim[1], this.dim[2]);
+    this.BufferGeometry = new THREE.BoxBufferGeometry(this.dim[0], this.dim[1], this.dim[2]);
     //this.geometry = new THREE.BoxGeometry(this.dim[0], this.dim[1], this.dim[2]);
     var col = 0xFFFFFF;
 
@@ -49,19 +105,19 @@ function OBJ(type, dim, pos, rot, buffer)
                 break;
             }
 
-            /*
+            
             this.material = new THREE.MeshPhongMaterial({
                     flatShading: THREE.FlatShading,
                     transparent: true,
                     opacity: 0.58
             });
-            */
-            this.material = new THREE.MeshLambertMaterial();  // faster!
+            
+            //this.material = new THREE.MeshLambertMaterial();  // faster!
             this.material.color.setHex( col );
         break;
     }
     
-    this.cube = new THREE.Mesh( this.geometry, this.material );
+    this.cube = new THREE.Mesh( this.BufferGeometry, this.material );
     this.cube.position.set(this.pos[0], this.pos[1], this.pos[2]);
     this.cube.rotation.set(this.rot[0], this.rot[1], this.rot[2]);
 
@@ -69,46 +125,9 @@ function OBJ(type, dim, pos, rot, buffer)
     this.ID = buffer.length;
 }
 
-//LIGHTNING
-//first point light
-light = new THREE.PointLight(0xffffff, 1, 4000);
-light.position.set(0, 0, 0);
-//the second one
-light_two = new THREE.PointLight(0xffffff, 1, 4000);
-light_two.position.set(-100, 800, 800);
-//And another global lightning some sort of cripple GL
-lightAmbient = new THREE.AmbientLight(0x404040);
-scene.add(light, light_two, lightAmbient);
-
-camera.position.set(30,30,30);
-camera.rotation.set(0,0,0);
-//camera.position.set( -30,30,30 );
-//camera.rotation.order = 'YXZ';
-//camera.rotation.y = - Math.PI / 4;
-//camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) );
-
-var rndData = generatePerlinNoise(maxX, maxY);
-for(var i=0 in rndData) rndData[i] = Math.floor(0.6 + rndData[i] * 12);  
-for(var i=0; i<maxX; i++)
-{
-    for(var j=0; j<maxY; j++)
-    {
-        var block = new OBJ(
-            rndData[j + i*maxX],
-            [1,1,1],
-            [i, rndData[j + i*maxX], j],
-            [0, 0, 0],
-            globalBlockContainer);  
-    }
-}
-
-for(var i=0; i<globalBlockContainer.length; i++)
-    scene.add(globalBlockContainer[i]);
-
-
 function animate()
 {
-	requestAnimationFrame( animate );
+    requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 }
 
@@ -133,4 +152,19 @@ document.onkeydown = function checkKey(e)
     
 }
 
+init();
 animate();
+
+function Player() 
+{
+    this.pos = new Vector3(0,0,0);
+    this.rot = new Vector3(0,0,0);
+    this.type = 0xFF;
+
+    function Create(type)
+    {
+        // Make model
+        // Set data
+        // NO ANIMATION!!!
+    };
+};
