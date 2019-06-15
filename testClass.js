@@ -1,95 +1,40 @@
 var THREE = require('three');
 var PERLIN = require('perlin-noise');
 
-var globalBlockContainer = [];
+var objectContainer = [];
 
 function OBJ(type, dim, pos, rot, buffer)
 {
     this.type = type;
-    this.dim = dim;
-    this.pos = pos;
-    this.rot = rot;
+    this.dim = dim; //new THREE.Vector3(dim[0], dim[1], dim[2]);
+    this.pos = pos; //new THREE.Vector3(pos[0], pos[1], pos[2]);
+    this.rot = rot; //new THREE.Vector3(rot[0], rot[1], rot[2]);
 
-    this.geometry = new THREE.BoxBufferGeometry(this.dim[0], this.dim[1], this.dim[2]);
-    //this.geometry = new THREE.BoxGeometry(this.dim[0], this.dim[1], this.dim[2]);
-    var col = 0xFFFFFF;
+    this.mesh = null;
 
-    switch(this.type)
+    switch (this.type)
     {
-        case 0:
+        case (0): // general terrain
         default:
-            switch(this.pos[1])
+            var material = new THREE.MeshLambertMaterial();
+            var color = 0x55DD88;
+            material.color.setHex(color);
+            var geometry = new THREE.BoxBufferGeometry(this.dim.x, this.dim.y, this.dim.z);
+            this.Update = function()
             {
-                case(0):
-                    col = 0x333333;
-                break;
-
-                case (1):
-                case (2):
-                case (3):
-                    col = 0xBBAA00;
-                break;
-                case (4):
-                case (5):
-                    col = 0x10AA50;
-                break;
-                case (6):
-                case (7):
-                    col = 0xBB5010;
-                break;
-                
-                default:
-                    col = 0xDDDDDD;
-                break;
-            }
-
-            
-            this.material = new THREE.MeshPhongMaterial({
-                    flatShading: THREE.FlatShading,
-                    transparent: true,
-                    opacity: 0.58
-            });
-            
-            //this.material = new THREE.MeshLambertMaterial();  // faster!
-            this.material.color.setHex( col );
+                console.log("Update: terrain");
+            };
         break;
-    }
-    
-    this.cube = new THREE.Mesh( this.geometry, this.material );
-    this.cube.position.set(this.pos[0], this.pos[1], this.pos[2]);
-    this.cube.rotation.set(this.rot[0], this.rot[1], this.rot[2]);
+    };
 
-    buffer.push(this.cube);
+    this.mesh = new THREE.Mesh( geometry, material );
+    this.mesh.position.set(this.pos.x, this.pos.y, this.pos.z);
+    this.mesh.rotation.set(this.rot.x, this.pos.y, this.pos.z);
+
     this.ID = buffer.length;
+    buffer.push(this);
 }
 
-var rndData = PERLIN.generatePerlinNoise(100, 100);
-for(var i=0 in rndData) rndData[i] = Math.floor(0.6 + rndData[i] * 12);  
-for(var i=0; i<100; i++)
-{
-    for(var j=0; j<100; j++)
-    {
-        var block = new OBJ(
-            rndData[j + i*100],
-            [1,1,1],
-            [i, rndData[j + i*100], j],
-            [0, 0, 0],
-            globalBlockContainer);  
-    }
-}
-
-/*
-0  1  2  3  4  5
-6  7  8  9  10 11
-12 13 14 15 16 17
-18 19 20 21 22 23
-24 25 26 27 28 29
-
-maxX = 6
-maxY = 5
-
-v=16, x=4, y=3
-*/
 function valueToXY(value, max_x, max_y)
 {
     var r = [Math.floor(value%max_x), Math.floor((value%max_x)%max_y)];
@@ -103,4 +48,12 @@ function XYtoValue(x, y, max_x)
 }
 console.log(valueToXY(7, 6, 5));
 console.log(XYtoValue(1,1,6,5));
-//console.log(globalBlockContainer);
+
+for(var i=0; i<20; i++)
+{
+    OBJ(0, new THREE.Vector3(1,1,1), new THREE.Vector3(i,0,i*10 + i), new THREE.Vector3(0,0,0), objectContainer);
+
+    objectContainer[i].Update();
+
+    console.log(objectContainer[i].mesh.position);
+}
