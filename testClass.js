@@ -39,16 +39,19 @@ function init()
     document.body.appendChild( renderer.domElement );
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = false;
+    //controls.enableZoom = false;
 
     stats = new Stats();
-    stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+    stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild( stats.dom );
 
     addLights();
     drawSheep();
     //drawCloud();
     //drawSky();
+
+    var m = new Map(30, 30, -1.0);
+    scene.add(m.group);
 
     //world = document.querySelector('.world');
     //world.appendChild(renderer.domElement);
@@ -91,12 +94,6 @@ function animate()
 {
     requestAnimationFrame(animate);
   
-    render();
-}
-  
-function render()
-{ 
-    sheep.jumpOnMouseDown();
     stats.begin();
 
     //if (sheep.group.position.y > 0.4) cloudcloud.bend();
@@ -104,7 +101,15 @@ function render()
     
     controls.update();
 
-	stats.end();
+    stats.end();
+    
+    render();
+}
+  
+function render()
+{ 
+    sheep.jumpOnMouseDown();
+   
     renderer.render(scene, camera);
 }
 
@@ -137,15 +142,6 @@ class Sheep
         this.drawBody();
         this.drawHead();
         this.drawLegs();
-    }
-
-    moveTo(x,y,z)
-    {
-        var old_x = this.group.position.x;
-        var old_y = this.group.position.y;
-        var old_z = this.group.position.z;
-
-        this.group.position.set(old_x + x, old_y + y, old_z + z);
     }
 
     drawBody()
@@ -265,6 +261,81 @@ class Sheep
         {
             if (this.group.position.y <= 0.4) return;
             this.jump(0.08);
+        }
+    }
+}
+
+class Map
+{
+    constructor(width, height, level)
+    {
+        this.blocks = [];
+        this.width = width;
+        this.height = height;
+        this.level = level;
+
+        this.group = new THREE.Group();
+        this.group.position.set(-this.width/2, this.level, -this.height/2);
+
+        // Simple gray block
+        this.simpleBlock = new THREE.MeshLambertMaterial(
+            {
+                color: 0xAAAAAA,
+                flatShading: THREE.FlatShading
+            });
+
+        // Simple red block
+        this.redBlock = new THREE.MeshLambertMaterial(
+            {
+                color: 0xFF0000,
+                flatShading: THREE.FlatShading
+            });
+
+        var blocks = [];
+
+        this.makeMap();
+    }
+
+    makeMap()
+    {
+        var rndMapData = generatePerlinNoise(this.width, this.height);
+        const blockGeometry = new THREE.BoxBufferGeometry(1,1,1);
+        var blockMesh;
+
+        for(var i=0; i<this.width; i++)
+        {
+            for(var j=0; j<this.height; j++)
+            {
+                var tmp = Math.floor( 2 * rndMapData[XYtoValue(i, j, this.width, this.height)] );
+                switch(tmp)
+                {
+                    case (0):
+                        blockMesh = new THREE.Mesh( blockGeometry, this.simpleBlock);
+                    break;
+
+                    case (1):
+                    default:
+                        blockMesh = new THREE.Mesh( blockGeometry, this.redBlock);
+                    break;
+                }
+                
+
+                blockMesh.position.x = i; //-width/2 + i;
+                blockMesh.position.y = this.level;
+                blockMesh.position.z = j; //-height/2 + j;
+
+                blockMesh.castShadow = true;
+                blockMesh.receiveShadow = true;
+                this.group.add(blockMesh);
+
+                var data = {
+                    position: {x: -this.width/2 + i, y: this.level, z: -this.height/2 + j},
+                    type: tmp,
+                    id: this.blocks.length
+                };
+                
+                this.blocks.push(data);
+            }     
         }
     }
 }
