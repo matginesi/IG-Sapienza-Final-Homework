@@ -10,6 +10,7 @@ var world;
 //var night = false;
 
 var sheep;
+var sheeps = [];
 /*
 let sheep,
     cloud,
@@ -17,6 +18,21 @@ let sheep,
 */
 var width;
 var height;
+
+var globalMap;
+
+document.onkeydown = function checkKey(e)
+{
+    e = e || window.event;
+
+    if (e.keyCode == '83') // W
+        globalMap.changeType(XYtoValue(15, 15, 30, 30), 1);
+    
+    if (e.keyCode == '87') // S
+        globalMap.changeType(XYtoValue(15, 15, 30, 30), 0);
+
+    console.log("Event captured: ", e || window.event);
+}
 
 function init()
 {
@@ -46,12 +62,23 @@ function init()
     document.body.appendChild( stats.dom );
 
     addLights();
-    drawSheep();
+    
+    //drawSheep();
+    
     //drawCloud();
     //drawSky();
 
-    var m = new Map(30, 30, -1.0);
-    scene.add(m.group);
+    globalMap = new Map(30, 30, -0.5);
+    scene.add(globalMap.group);
+
+    for(var i=0; i<10; i++)
+        for(var j=0; j<10; j++)
+        {
+            sheeps.push(new Sheep());
+            sheeps[i*10 + j].group.scale.set(0.3, 0.3, 0.3);
+            sheeps[i*10 + j].group.position.set(-5+i, 0, -5+j);
+            scene.add(sheeps[i*10 + j].group);
+        } 
 
     //world = document.querySelector('.world');
     //world.appendChild(renderer.domElement);
@@ -66,6 +93,7 @@ function init()
 function drawSheep()
 {
     sheep = new Sheep();
+    sheep.group.scale.set(0.3, 0.3, 0.3);
     scene.add(sheep.group);
 }
 
@@ -108,7 +136,9 @@ function animate()
   
 function render()
 { 
-    sheep.jumpOnMouseDown();
+    //sheep.jumpOnMouseDown();
+    for(var i=0; i in sheeps; i++)
+        sheeps[i].jumpOnMouseDown();
    
     renderer.render(scene, camera);
 }
@@ -296,6 +326,52 @@ class Map
         this.makeMap();
     }
 
+    changeType(id, type)
+    {
+        this.blocks[id].type = type;
+        var blockMesh;
+
+        var oldPosition = {
+            x: this.group.children[id].position.x,
+            y: this.group.children[id].position.y,
+            z: this.group.children[id].position.z};
+
+        scene.remove(this.group[id]);
+        
+        var blockGeometry = new THREE.BoxBufferGeometry(1,1,1);
+        switch(type)
+        {
+            case (0):
+                blockMesh = new THREE.Mesh( blockGeometry, this.simpleBlock);
+            break;
+
+            case (1):
+            default:
+                blockMesh = new THREE.Mesh( blockGeometry, this.redBlock);
+            break;
+        }
+
+        blockMesh.position.set = oldPosition + this.group.position;
+        blockMesh.position.y += 2*this.level; // It works.
+
+        blockMesh.castShadow = true;
+        blockMesh.receiveShadow = true;
+
+        this.group.children[id] = blockMesh;
+    }
+
+    getRealPosition(id)
+    {
+        var position = 
+        {
+            x: this.blocks[id].position.x + this.group.position.x,
+            y: this.blocks[id].position.y + this.group.position.y,
+            z: this.blocks[id].position.z + this.group.position.z
+        };
+
+        return position;
+    }
+
     makeMap()
     {
         var rndMapData = generatePerlinNoise(this.width, this.height);
@@ -326,10 +402,11 @@ class Map
 
                 blockMesh.castShadow = true;
                 blockMesh.receiveShadow = true;
+
                 this.group.add(blockMesh);
 
                 var data = {
-                    position: {x: -this.width/2 + i, y: this.level, z: -this.height/2 + j},
+                    position: {x: i, y: 0, z: j},
                     type: tmp,
                     id: this.blocks.length
                 };
