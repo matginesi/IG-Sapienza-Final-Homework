@@ -105,6 +105,9 @@ function init()
     //document.addEventListener('touchstart', onTouchStart);
     //document.addEventListener('touchend', onTouchEnd);
     //window.addEventListener('resize', onResize);
+
+    globalTimer = new THREE.Clock();
+    globalTimer.start();
 }
 
 function drawSheep()

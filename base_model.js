@@ -1,3 +1,14 @@
+
+/*
+    In app.js there is a timer called: globalTimer
+    to get elapsed time, use: globalTimer.getElapsedTime().
+
+    It is useful to realize animation with certain milliseconds delay
+    eg:
+        if(!( globalTimer.getElapsedTime()/100 > 0))
+            animateRightLeg();
+        ...
+*/
 class Model
 {
     constructor()
