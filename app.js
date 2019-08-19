@@ -8,7 +8,7 @@ class Game
         this.height = window.innerHeight;
 
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color( 0x000000 );    // Black background
+        this.scene.background = new THREE.Color( 0x00 );    // Dark black background
         //this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
         
         this.camera = new THREE.PerspectiveCamera( 75, this.width/this.height, 0.1, 200 );
@@ -75,6 +75,7 @@ class Game
     }
 }
 
+/*
 document.onmousedown = function onMouseDown()
 {   
     // Only for debug
@@ -90,12 +91,39 @@ document.onmouseup = function onMouseUp()
     console.log("Button released: " + event.button)
     console.log("At: " + event.clientX + ", " + event.clientY);
 };
+*/
+
 
 // Needed by Game class
 var updateFunction = function ()
 {
     // Update position and other stuff...
-    console.log("DAJE!");
+    //console.log("DAJE!");
+}
+
+// Random map generator
+function makeMap()
+{
+    var mapGeometry = new THREE.PlaneGeometry(40, 40, 200, 200);
+    var data = generatePerlinNoise(
+        Math.sqrt(mapGeometry.vertices.length),
+        Math.sqrt(mapGeometry.vertices.length));
+
+    for (var i = 0; i < mapGeometry.vertices.length; i++)
+        mapGeometry.vertices[i].z = data[i] * 1.8;
+    
+    var mapMaterial = new THREE.MeshLambertMaterial({
+        color: 0x888888, 
+        wireframe: true
+        });
+        
+    var map = new THREE.Mesh(mapGeometry, mapMaterial);
+    
+    map.rotation.x = -Math.PI/2;
+    map.castShadow = true;
+    map.receiveShadow = true;
+    
+    return map;
 }
 
 // THE GAME ITSELF (just like main() in c++)
@@ -104,6 +132,8 @@ var game = new Game();
 
 game.update = updateFunction;
 game.addLights();
+
+game.scene.add(makeMap());
 
 game.animate();
 
