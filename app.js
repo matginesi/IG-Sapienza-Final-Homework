@@ -91,15 +91,6 @@ document.onmouseup = function onMouseUp()
     console.log("At: " + event.clientX + ", " + event.clientY);
 };
 
-
-var geometry = new THREE.BoxGeometry(10, 1, 1);
-
-
-for (var i = 0; i < geometry.vertices.length; i++) {
-    geometry.skinIndices.push(new THREE.Vector4(0, 1, 0, 0));
-    geometry.skinWeights.push(new THREE.Vector4(1, 1, 0, 0));
-}
-
 // Needed by Game class
 var updateFunction = function ()
 {
