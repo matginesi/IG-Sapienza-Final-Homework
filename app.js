@@ -33,8 +33,11 @@ class Game
 
         this.timer = new THREE.Clock();
         this.timer.start();
+
+        this.update = function dummyUpdate() {};
     }
 
+    
     addLights()
     {
         const light = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.9);
@@ -61,6 +64,8 @@ class Game
 
         this.stats.end();
         
+        this.update();
+
         this.render();
     }
     
@@ -86,8 +91,28 @@ document.onmouseup = function onMouseUp()
     console.log("At: " + event.clientX + ", " + event.clientY);
 };
 
+
+var geometry = new THREE.BoxGeometry(10, 1, 1);
+
+
+for (var i = 0; i < geometry.vertices.length; i++) {
+    geometry.skinIndices.push(new THREE.Vector4(0, 1, 0, 0));
+    geometry.skinWeights.push(new THREE.Vector4(1, 1, 0, 0));
+}
+
+// Needed by Game class
+var updateFunction = function ()
+{
+    // Update position and other stuff...
+    console.log("DAJE!");
+}
+
 // THE GAME ITSELF (just like main() in c++)
 
-var game = new Game;
+var game = new Game();
+
+game.update = updateFunction;
 game.addLights();
+
 game.animate();
+
