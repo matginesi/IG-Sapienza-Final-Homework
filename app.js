@@ -40,7 +40,7 @@ class Game
     
     addLights()
     {
-        var spotLight = new THREE.SpotLight( 0xffffff, 0.8);
+        var spotLight = new THREE.SpotLight( 0xDDDDDD, 0.5);
         spotLight.castShadow = true;
         this.scene.add( spotLight );
 
@@ -98,7 +98,7 @@ class Game
     }
 }
 
-
+/*
 document.onmousedown = function onMouseDown()
 { 
     // Only for debug
@@ -114,6 +114,8 @@ document.onmouseup = function onMouseUp()
     //console.log("Button released: " + event.button)
     //console.log("At: " + event.clientX + ", " + event.clientY);
 };
+*/
+
 
 // Random map generator
 function makeMap()
