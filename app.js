@@ -1,4 +1,3 @@
-'use strict';
 
 class Game
 {
@@ -117,56 +116,12 @@ document.onmouseup = function onMouseUp()
 };
 */
 
-
-// Random map generator
-function makeMap()
-{
-    //var loader = new THREE.TextureLoader();
-    //var texture = loader.load( 'https://images.template.net/wp-content/uploads/2016/04/26085855/Grass-Texture.jpg' );
-    
-    var mapGeometry = new THREE.PlaneGeometry(100, 100, 100, 100);
-    
-    var simplex = new SimplexNoise();
-    for(var i=0; i<100; i++)
-    {
-        for(var j=0; j<100; j++)
-        {
-            mapGeometry.vertices[i+j*100].z = (
-                (simplex.noise2D( i/100,j/100)) + 
-                (simplex.noise2D( (i+200)/50,j/50)) + 
-                (simplex.noise2D( (i+400)/25,j/25)) +
-                (simplex.noise2D( (i+600)/12.5,j/12.5)) +
-                (simplex.noise2D( (i+800)/6.25,j/6.25)) ) * 1.5;
-        }
-    }
-    
-
-    // map: texture,
-    var mapMaterial = new THREE.MeshPhongMaterial({
-        color: 0x5555FF, 
-        wireframe: false,
-        depthTest: true,
-        side: THREE.FrontSide,
-        flatShading: THREE.FlatShading
-        });
-        
-    var map = new THREE.Mesh(mapGeometry, mapMaterial);
-    
-    map.rotation.x = -Math.PI/2;
-    map.castShadow = true;
-    map.receiveShadow = true;
-    map.position.y = 0;
-    map.name = "Terrain"
-    
-    return map;
-
-}
-
 // THE GAME ITSELF (just like main() in c++)
-var globalEvent;
+var globalKeyPressed;
 var game = new Game();
 var globalMap = makeMap();
 var snake;
+var food;
 
 window.onload = function main()
 {
@@ -183,171 +138,24 @@ window.onload = function main()
     snake.addBlock();
     snake.addBlock();
 
+    food = new Food(new THREE.Vector3(5,2,0));
+    food.build();
+
     game.animate();
 }
 
-class Snake
-{
-    constructor()
-    {
-        this.snakeLenght = 0;
-        this.snakePosition = new THREE.Vector3(0, 2, 0);
-        this.snakeRotation = new THREE.Vector3(0, 0, 0);
-
-        this.snakeGroup = new THREE.Group();
-        this.snakeGroup.name = "SnakeGroup";
-        this.blockGeometry = new THREE.CubeGeometry(1, 1);
-        this.blockMaterial = new THREE.MeshPhongMaterial({
-            color: 0xAAFF55, 
-            wireframe: false,
-            depthTest: true,
-        });
-        this.rayCaster = new THREE.Raycaster();
-    }
-
-    buildHead()
-    {
-        this.snakeLenght = 0;
-        
-        this.snakeGroup.position.x = this.snakePosition.x;
-        this.snakeGroup.position.y = this.snakePosition.y;
-        this.snakeGroup.position.z = this.snakePosition.z;
-
-        this.snakeGroup.rotation.x = this.snakeRotation.x;
-        this.snakeGroup.rotation.y = this.snakeRotation.y;
-        this.snakeGroup.rotation.z = this.snakeRotation.z;
-        
-        var headGeometry = new THREE.DodecahedronBufferGeometry(1);
-        var headMaterial = new THREE.MeshPhongMaterial({
-            color: 0xFFFF00, 
-            wireframe: false,
-            depthTest: true,
-        });
-        
-        var headMesh = new THREE.Mesh(headGeometry, headMaterial);
-        headMesh.castShadow = true;
-        headMesh.receiveShadow = true;
-        headMesh.name = "Snake:head";
-
-        this.snakeGroup.add(headMesh);
-        game.scene.add(this.snakeGroup);
-
-        this.blocks = 1;
-    }
-
-    addBlock()
-    {
-
-        var blockMesh = new THREE.Mesh(this.blockGeometry, this.blockMaterial);
-        blockMesh.castShadow = true;
-        blockMesh.receiveShadow = true;
-        blockMesh.position.z = 1 - (1.2 * this.blocks);
-        blockMesh.name = "Snake:Tail_" + this.blocks;
-
-        this.snakeGroup.add(blockMesh);
-        this.blocks++;
-    }
-
-    move(x, y, z)
-    {
-
-        this.snakeGroup.position.x += x;
-        this.snakeGroup.position.y += y;
-        this.snakeGroup.position.z += z;
-        
-        this.snakeGroup.children[0].rotation.x += Math.sin(x);
-        this.snakeGroup.children[0].rotation.y += Math.sin(y);
-        this.snakeGroup.children[0].rotation.z += Math.sin(z);
-
-        for(var i=1; i<this.blocks; i++)
-        {
-            if(i%2)
-            {
-                this.snakeGroup.children[i].rotation.x -= Math.sin(x);
-                this.snakeGroup.children[i].rotation.y -= Math.sin(y);
-                this.snakeGroup.children[i].rotation.z -= Math.sin(z);
-            }
-            else
-            {
-                this.snakeGroup.children[i].rotation.x += Math.sin(x);
-                this.snakeGroup.children[i].rotation.y += Math.sin(y);
-                this.snakeGroup.children[i].rotation.z += Math.sin(z);
-            }
-        }
-    }
-
-    checkCollision()
-    {
-        // Check gravity
-        var gravityDir = new THREE.Vector3(0, 0, 0);
-        gravityDir.x = this.snakeGroup.position.x;
-        gravityDir.y = - 1.5;
-        gravityDir.z = this.snakeGroup.position.z;
-
-        this.rayCaster.set(this.snakeGroup.position, gravityDir);
-        var intersects = this.rayCaster.intersectObjects( game.scene.children );
-        
-        for(var i=0; i<intersects.length; i++)
-        {
-            if(intersects[i].object.name == "Terrain")
-            {
-                //console.log("Sbem! " + intersects.length);
-                //this.move(0, -0.02, 0);
-                if(intersects[i].distance < 2)
-                    this.move(0, 0.1, 0);
-                else
-                    this.setPosition("y", 2);
-                
-                break;
-            }
-        }
-    }
-
-    setPosition(pos, value)
-    {
-        if(pos == "x")
-            this.snakeGroup.position.x = value;
-
-        if(pos == "y")
-            this.snakeGroup.position.y = value;
-
-        if(pos == "z")
-            this.snakeGroup.position.z = value;
-    }
-};
-
 document.onkeydown = function checkKey(e)
 {
-    globalEvent = (e || window.event).keyCode;
+    globalKeyPressed = (e || window.event).keyCode;
 }
 
 
 // Needed by Game class
 var updateFunction = function ()
 {
-    snake.checkCollision();
-
-    switch(globalEvent)
-    {
-        case(87):
-            snake.move(0, 0, +0.1);
-            break;
-
-        case(83):
-            snake.move(0, 0, -0.1);
-            break;
-
-        case(65):
-            snake.move(-0.1, 0, 0);
-            break;
-        
-        case(68):
-            snake.move(0.1, 0, 0);
-            break;
-
-        default:
-            break;
-    }
-    //globalEvent = null;
+    snake.update();
+    food.update();
+    
+    //globalKeyPressed = null;
     
 }   
