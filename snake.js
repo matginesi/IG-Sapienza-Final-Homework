@@ -29,7 +29,7 @@ class Snake
         this.snakeGroup.rotation.y = this.snakeRotation.y;
         this.snakeGroup.rotation.z = this.snakeRotation.z;
         
-        var headGeometry = new THREE.DodecahedronBufferGeometry(1);
+        var headGeometry = new THREE.DodecahedronGeometry(1);
         var headMaterial = new THREE.MeshPhongMaterial({
             color: 0xFFFF00, 
             wireframe: false,
@@ -118,29 +118,29 @@ class Snake
                 this.move(0, -0.1, 0);
         }
         */
-        var faceDir = new THREE.Vector3(0, 0, 0);
-        faceDir.x = this.snakeGroup.position.x;
-        faceDir.y = this.snakeGroup.position.y;
-        faceDir.z = this.snakeGroup.position.z;
+        
+        var direction = new THREE.Vector3(
+                this.snakeGroup.position.x,
+                this.snakeGroup.position.y,
+                this.snakeGroup.position.z + 5);
 
-        this.rayCaster.set(this.snakeGroup.position, faceDir);
+        this.rayCaster.set(this.snakeGroup.position, direction);
         var intersects = this.rayCaster.intersectObjects( game.scene.children );
+        
+        var geometry = new THREE.Geometry();
+        geometry.vertices.push(this.snakeGroup.position);
+        geometry.vertices.push(direction);
+        
+        game.scene.remove(this.rayHelper);
+        this.rayHelper = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0xFFFF00, linewidth: 2}));
+        game.scene.add(this.rayHelper);
 
-        //console.log("faceDir: ", faceDir);
-        //console.log("Group position: ", this.snakeGroup.position);
         if(intersects.length != 0)
-        {       
-            console.log(intersects);
-
+        {
             for(var i=0; i<intersects.length; i++)
             {
-                if( intersects[i].object.name == "FoodGroup" )
-                {
-                    console.log("OK");
-                    //game.scene.del(game.scene.getObjectByName("FoodGroup"));
-                    this.addBlock();
-                    continue;
-                }
+                console.log(intersects);
+                continue;
             }
         }
     }
