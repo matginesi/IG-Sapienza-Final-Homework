@@ -14,7 +14,6 @@ class Snake
             wireframe: false,
             depthTest: true,
         });
-        this.rayCaster = new THREE.Raycaster();
     }
 
     buildHead()
@@ -35,7 +34,7 @@ class Snake
             wireframe: false,
             depthTest: true,
         });
-        
+
         var headMesh = new THREE.Mesh(headGeometry, headMaterial);
         headMesh.castShadow = true;
         headMesh.receiveShadow = true;
@@ -53,7 +52,7 @@ class Snake
         var blockMesh = new THREE.Mesh(this.blockGeometry, this.blockMaterial);
         blockMesh.castShadow = true;
         blockMesh.receiveShadow = true;
-        blockMesh.position.z = 1 - (1.2 * this.blocks);
+        blockMesh.position.z = (-1.2 * this.blocks) - 0.2;
         blockMesh.name = "Snake:Tail_" + this.blocks;
 
         this.snakeGroup.add(blockMesh);
@@ -67,11 +66,11 @@ class Snake
         this.snakeGroup.position.y += y;
         this.snakeGroup.position.z += z;
         
-        this.snakeGroup.children[0].rotation.x += Math.sin(x);
-        this.snakeGroup.children[0].rotation.y += Math.sin(y);
-        this.snakeGroup.children[0].rotation.z += Math.sin(z);
+        this.snakeGroup.children[1].rotation.x += Math.sin(x);
+        this.snakeGroup.children[1].rotation.y += Math.sin(y);
+        this.snakeGroup.children[1].rotation.z += Math.sin(z);
 
-        for(var i=1; i<this.blocks; i++)
+        for(var i=2; i<this.blocks; i++)
         {
             if(i%2)
             {
@@ -90,59 +89,27 @@ class Snake
 
     checkCollision()
     {
-        /*
-        // Check gravity
-        var gravityDir = new THREE.Vector3(0, 0, 0);
-        gravityDir.x = this.snakeGroup.position.x;
-        gravityDir.y = -1.5;
-        gravityDir.z = this.snakeGroup.position.z;
-
-        this.rayCaster.set(this.snakeGroup.position, gravityDir);
-        var intersects = this.rayCaster.intersectObjects( game.scene.children );
+        var originPoint = this.snakeGroup.position.clone();
+        originPoint.z += 1;
+        var destPoint = this.snakeGroup.position.clone();
+        destPoint.z -= 1;
         
-        if(intersects.length != 0)
+        var ray = new THREE.Raycaster( originPoint, destPoint );
+        //var collisionResults = ray.intersectObjects( game.scene.children );
+        var collisionResults = ray.intersectObjects( game.scene.children );
+        
+        if ( collisionResults.length != 0)
         {
-            for(var i=0; i<intersects.length; i++)
+            for(var i=0; i<collisionResults.length; i++)
             {
-                if( intersects[i].object.name == "Ground" &&
-                    intersects[i].distance < 1.5)
+                if(collisionResults[i].object.name == "box")
                 {
-                    this.move(0, 0.1, 0);
-                    continue;
+                    console.log(collisionResults[i].object.name);
+                    
+                    return;
                 }
             }
-        }
-        else
-        {
-            if(this.snakeGroup.position.y > 2.5 && this.snakeGroup.position.y < 1.5)
-                this.move(0, -0.1, 0);
-        }
-        */
-        
-        var direction = new THREE.Vector3(
-                this.snakeGroup.position.x,
-                this.snakeGroup.position.y,
-                this.snakeGroup.position.z + 5);
-
-        this.rayCaster.set(this.snakeGroup.position, direction);
-        var intersects = this.rayCaster.intersectObjects( game.scene.children );
-        
-        var geometry = new THREE.Geometry();
-        geometry.vertices.push(this.snakeGroup.position);
-        geometry.vertices.push(direction);
-        
-        game.scene.remove(this.rayHelper);
-        this.rayHelper = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0xFFFF00, linewidth: 2}));
-        game.scene.add(this.rayHelper);
-
-        if(intersects.length != 0)
-        {
-            for(var i=0; i<intersects.length; i++)
-            {
-                console.log(intersects);
-                continue;
-            }
-        }
+        } 
     }
 
     setPosition(pos, value)
@@ -158,7 +125,9 @@ class Snake
     }
 
     update()
-    {
+    {        
+        this.checkCollision();
+
         switch(globalKeyPressed)
         {
             case(87):
@@ -180,7 +149,5 @@ class Snake
             default:
                 break;
         }
-        
-        this.checkCollision();
     }
 };

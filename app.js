@@ -8,13 +8,7 @@ class Game
 
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color( 0x00 );    // Dark black background
-        //this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
         
-        this.camera = new THREE.PerspectiveCamera( 75, this.width/this.height, 0.1, 200 );
-        this.camera.lookAt(this.scene.position);
-        this.camera.position.set(0, 3, -10);
-        this.camera.rotation.y -= 30/(2*Math.PI);
-
         this.renderer = new THREE.WebGLRenderer({ alpha: true });
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(this.width, this.height);
@@ -23,7 +17,7 @@ class Game
         
         document.body.appendChild( this.renderer.domElement );
 
-        this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        //this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 
         this.stats = new Stats();
         this.stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -37,7 +31,36 @@ class Game
         this.update = function dummyUpdate() {};
     }
 
-    
+    gameCamera()
+    {
+        this.camera = new THREE.PerspectiveCamera( 75, this.width/this.height, 0.1, 200 );
+        this.camera.lookAt(this.scene.position);
+        this.camera.position.set(5, 10, -10);
+    }
+
+    menuCamera()
+    {
+        this.camera = new THREE.PerspectiveCamera( 75, this.width/this.height, 0.1, 200 );
+        this.camera.lookAt(this.scene.position);
+        this.camera.position.set(0, 20, 0);
+    }
+
+    menuText = function() {
+        this.message = 'dat.gui';
+        this.speed = 0.8;
+        this.displayOutline = false;
+        //this.explode = function() { ... };
+    }
+
+    menu()
+    {
+        var text = new this.menuText();
+        var gui = new dat.GUI();
+        gui.add(text, 'message');
+        gui.add(text, 'speed', -5, 5);
+        gui.add(text, 'displayOutline');
+    }
+
     addLights()
     {
         var spotLight = new THREE.SpotLight( 0xDDDDDD, 0.5);
@@ -83,7 +106,7 @@ class Game
     
         this.stats.begin();
         
-        this.controls.update();
+        //this.controls.update();
 
         this.stats.end();
         
@@ -127,6 +150,8 @@ window.onload = function main()
 {
     game.update = updateFunction;
     game.addLights();
+    game.gameCamera();
+    game.menu();
 
     game.scene.add(globalMap);
     
@@ -138,8 +163,24 @@ window.onload = function main()
     snake.addBlock();
     snake.addBlock();
 
-    food = new Food(new THREE.Vector3(5,2,0));
-    food.build();
+    //food = new Food(new THREE.Vector3(5,2,0));
+    //food.build();
+
+    var blockGeometry = new THREE.CubeGeometry(3, 3, 3);
+    var blockMaterial = new THREE.MeshPhongMaterial({
+        color: 0xAAAAAA, 
+        wireframe: true,
+        depthTest: true,
+        side: THREE.DoubleSide
+    });
+    var blockMesh = new THREE.Mesh(blockGeometry, blockMaterial);
+    blockMesh.castShadow = true;
+    blockMesh.receiveShadow = true;
+    blockMesh.name = "box";
+    blockMesh.position.x = 3;
+    blockMesh.position.y = 2;
+    blockMesh.position.z = 3;
+    game.scene.add(blockMesh);
 
     game.animate();
 }
@@ -154,8 +195,10 @@ document.onkeydown = function checkKey(e)
 var updateFunction = function ()
 {
     snake.update();
-    food.update();
+    
+    //food.update();
     
     //globalKeyPressed = null;
     
+    this.camera.lookAt(snake.snakeGroup.position);
 }   

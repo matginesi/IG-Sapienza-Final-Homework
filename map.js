@@ -18,8 +18,8 @@ function makeMap()
                 (simplex.noise2D( (i+800)/6.25,j/6.25)) ) * 1.5;
         }
     }
+    
     */
-
     // map: texture,
     var mapMaterial = new THREE.MeshPhongMaterial({
         color: 0x5555FF, 

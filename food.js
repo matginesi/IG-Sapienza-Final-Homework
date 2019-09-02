@@ -16,16 +16,17 @@ class Food
             depthTest: true,
         });
 
-        this.hitBoxGeometry = new THREE.SphereGeometry( 2, 16, 16);
+        //this.hitBoxGeometry = new THREE.SphereGeometry( 2, 16, 16);
+        this.hitBoxGeometry = new THREE.CubeGeometry(4, 4, 4);
         this.hitBoxMaterial = new THREE.MeshPhongMaterial({
             color: 0xFF0000,
             wireframe: true,
             depthTest: true,
-            transparent: true,
-            opacity: 0.4,
+            transparent: false,
             visible: true
         });
-        this.rayCaster = new THREE.Raycaster();    
+        
+        this.blocks = 0;
     }
 
     build()
@@ -36,52 +37,17 @@ class Food
         hitBoxMesh.name = "Food:HitBox";
         this.group.add(hitBoxMesh);
 
-        var blockMesh = new THREE.Mesh(this.blockGeometry, this.blockMaterial);
-        blockMesh.castShadow = true;
-        blockMesh.receiveShadow = true;
-        blockMesh.name = "Food:Block_0";
-        this.group.add(blockMesh);
-
-    
-        var blockMesh = new THREE.Mesh(this.blockGeometry, this.blockMaterial);
-        blockMesh.castShadow = true;
-        blockMesh.receiveShadow = true;
-        blockMesh.name = "Food:Block_1";
-        
-        blockMesh.rotation.x = 90 / (Math.PI/2);
-        blockMesh.rotation.z = 90 / (Math.PI/2);
-        blockMesh.position.x = +1;
-        blockMesh.position.y = +1;
-        blockMesh.position.z = +1;
-        this.group.add(blockMesh);
-
-        var blockMesh = new THREE.Mesh(this.blockGeometry, this.blockMaterial);
-        blockMesh.castShadow = true;
-        blockMesh.receiveShadow = true;
-        blockMesh.name = "Food:Block_2";
-        
-        blockMesh.rotation.x = 180 / (Math.PI/2);
-        blockMesh.rotation.z = 180 / (Math.PI/2);
-        blockMesh.position.x = -1;
-        blockMesh.position.y = +1;
-        blockMesh.position.z = +1;
-        this.group.add(blockMesh);
-
         this.group.position.x = this.position.x;
         this.group.position.y = this.position.y;
         this.group.position.z = this.position.z;
 
         game.scene.add(this.group);
+        
+        this.blocks = 1;
     }
 
     update()
     {
-        var t = game.timer.getElapsedTime();
         
-        this.group.rotation.y = t*25/(2*Math.PI);
-        this.group.rotation.z = t*10/(2*Math.PI);
-        this.group.rotation.x = t*35/(2*Math.PI);
-        
-        this.group.position.y += Math.sin(25*t)/100;       
     }
 }
