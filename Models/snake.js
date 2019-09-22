@@ -18,8 +18,8 @@ class Snake {
         this.snakeGroup = new THREE.Group();
         this.snakeGroup.name = "SnakeGroup";
 
-        this.blockGeometry = new THREE.CubeGeometry(1, 1);
-        this.blockMaterial = new THREE.MeshPhongMaterial({
+        this.blockGeometry = new THREE.BoxBufferGeometry(1, 1);
+        this.blockMaterial = new THREE.MeshLambertMaterial({
             color: 0xAAFF55,
             wireframe: false,
             depthTest: true,
@@ -28,7 +28,7 @@ class Snake {
 
         });
 
-        this.whiteMaterial = new THREE.MeshPhongMaterial({
+        this.whiteMaterial = new THREE.MeshLambertMaterial({
             color: 0xFFFFFF,
             wireframe: false,
             depthTest: true,
@@ -38,7 +38,7 @@ class Snake {
 
         });
 
-        this.blackMaterial = new THREE.MeshPhongMaterial({
+        this.blackMaterial = new THREE. MeshLambertMaterial({
             color: 0x000000,
             wireframe: false,
             depthTest: true,
@@ -48,7 +48,7 @@ class Snake {
 
         });
 
-        this.redMaterial = new THREE.MeshPhongMaterial({
+        this.redMaterial = new THREE. MeshLambertMaterial({
             color: 0xB22222,
             wireframe: false,
             depthTest: true,
@@ -56,7 +56,7 @@ class Snake {
             receiveShadow: true,
 
         });
-        this.rayCaster = new THREE.Raycaster();
+        
 
         // initially snake is oriented vs positive Z axis
         this.snakeDirection = new THREE.Vector3(0, 0, 1);
@@ -82,12 +82,12 @@ class Snake {
         this.snakeGroup.add(head);
 
         var headTexture = new THREE.TextureLoader().load(headFile);
-        this.skinMaterial = new THREE.MeshBasicMaterial({ map: headTexture });
-        if (!textureAttive) this.skinMaterial = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffff00 });
+        this.skinMaterial = new THREE.MeshLambertMaterial({ map: headTexture});
+        if (!textureAttive) this.skinMaterial = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffff00  });
 
 
-        // const faceGeometryBIG = new THREE.BoxGeometry(1.5, 1.5, 1.5);       
-        const faceGeometryBIG = new THREE.CylinderGeometry(1, 1.2, 1.5, 5);
+        // const faceGeometryBIG = new THREE.BoxBufferGeometry(1.5, 1.5, 1.5);       
+        const faceGeometryBIG = new THREE.CylinderBufferGeometry(1, 1.2, 1.5, 5);
         const faceBIG = new THREE.Mesh(faceGeometryBIG, this.skinMaterial);
         faceBIG.castShadow = true;
         faceBIG.receiveShadow = true;
@@ -97,7 +97,7 @@ class Snake {
 
 
         // Ear (children[0].childer[1 e 2])
-        const faceGeometryEARRIGHT = new THREE.BoxGeometry(0.15, 0.7, 2);
+        const faceGeometryEARRIGHT = new THREE.BoxBufferGeometry(0.15, 0.7, 2);
         const faceEARRIGHT = new THREE.Mesh(faceGeometryEARRIGHT, this.skinMaterial);
         faceEARRIGHT.castShadow = true;
         faceEARRIGHT.receiveShadow = true;
@@ -107,7 +107,7 @@ class Snake {
 
 
 
-        const faceGeometryEARLEFT = new THREE.BoxGeometry(0.15, 0.7, 2);
+        const faceGeometryEARLEFT = new THREE.BoxBufferGeometry(0.15, 0.7, 2);
         const faceEARLEFT = new THREE.Mesh(faceGeometryEARLEFT, this.skinMaterial);
         faceEARLEFT.castShadow = true;
         faceEARLEFT.receiveShadow = true;
@@ -119,7 +119,7 @@ class Snake {
 
         // Horns - Head       
 
-        const faceGeometryHORNbackRIGHT = new THREE.ConeGeometry(0.2, 1.2, 32);
+        const faceGeometryHORNbackRIGHT = new THREE.ConeBufferGeometry(0.2, 1.2, 32);
         const hornbackRIGHT = new THREE.Mesh(faceGeometryHORNbackRIGHT, this.whiteMaterial);
         hornbackRIGHT.castShadow = true;
         hornbackRIGHT.receiveShadow = true;
@@ -127,7 +127,7 @@ class Snake {
         hornbackRIGHT.rotation.set(-0.5, 0, -0.5);
         head.add(hornbackRIGHT);
 
-        const faceGeometryHORNbackLEFT = new THREE.ConeGeometry(0.2, 1.2, 32);
+        const faceGeometryHORNbackLEFT = new THREE.ConeBufferGeometry(0.2, 1.2, 32);
         const hornbackLEFT = new THREE.Mesh(faceGeometryHORNbackLEFT, this.whiteMaterial);
         hornbackLEFT.castShadow = true;
         hornbackLEFT.receiveShadow = true;
@@ -137,7 +137,7 @@ class Snake {
 
 
         // Squame    (children[0].childer[5 e 6 e 7])       
-        const faceGeometrySQUAME1 = new THREE.BoxGeometry(0.2, 0.5, 0.5);
+        const faceGeometrySQUAME1 = new THREE.BoxBufferGeometry(0.2, 0.5, 0.5);
         const faceSQUAME1 = new THREE.Mesh(faceGeometrySQUAME1, this.redMaterial);
         faceSQUAME1.castShadow = true;
         faceSQUAME1.receiveShadow = true;
@@ -146,7 +146,7 @@ class Snake {
         head.add(faceSQUAME1);
 
 
-        const faceGeometrySQUAME2 = new THREE.BoxGeometry(0.2, 0.5, 0.5);
+        const faceGeometrySQUAME2 = new THREE.BoxBufferGeometry(0.2, 0.5, 0.5);
         const faceSQUAME2 = new THREE.Mesh(faceGeometrySQUAME2, this.redMaterial);
         faceSQUAME2.castShadow = true;
         faceSQUAME2.receiveShadow = true;
@@ -156,7 +156,7 @@ class Snake {
 
 
 
-        const faceGeometrySQUAME3 = new THREE.BoxGeometry(0.2, 0.5, 0.5);
+        const faceGeometrySQUAME3 = new THREE.BoxBufferGeometry(0.2, 0.5, 0.5);
         const faceSQUAME3 = new THREE.Mesh(faceGeometrySQUAME3, this.redMaterial);
         faceSQUAME3.castShadow = true;
         faceSQUAME3.receiveShadow = true;
@@ -167,7 +167,7 @@ class Snake {
 
 
         // Mouth   (children[0].childer[8 e 9])
-        const faceGeometryUP = new THREE.BoxGeometry(1, 0.4, 2.5);
+        const faceGeometryUP = new THREE.BoxBufferGeometry(1, 0.4, 2.5);
         const faceUP = new THREE.Mesh(faceGeometryUP, this.skinMaterial);
         faceUP.castShadow = true;
         faceUP.receiveShadow = true;
@@ -177,7 +177,7 @@ class Snake {
         head.add(faceUP);
 
 
-        const faceGeometryDOWN = new THREE.BoxGeometry(1, 0.2, 2);
+        const faceGeometryDOWN = new THREE.BoxBufferGeometry(1, 0.2, 2);
         const faceDOWN = new THREE.Mesh(faceGeometryDOWN, this.skinMaterial);
         faceDOWN.castShadow = true;
         faceDOWN.receiveShadow = true;
@@ -190,7 +190,7 @@ class Snake {
 
 
 
-        const faceGeometryHORNfrontRIGHT = new THREE.ConeGeometry(0.1, 0.42, 32);
+        const faceGeometryHORNfrontRIGHT = new THREE.ConeBufferGeometry(0.1, 0.42, 32);
         const hornfrontRIGHT = new THREE.Mesh(faceGeometryHORNfrontRIGHT, this.whiteMaterial);
         hornfrontRIGHT.castShadow = true;
         hornfrontRIGHT.receiveShadow = true;
@@ -198,7 +198,7 @@ class Snake {
         hornfrontRIGHT.rotation.set(0.5, 0, -0.5);
         faceUP.add(hornfrontRIGHT);
 
-        const faceGeometryHORNfrontLEFT = new THREE.ConeGeometry(0.1, 0.42, 32);
+        const faceGeometryHORNfrontLEFT = new THREE.ConeBufferGeometry(0.1, 0.42, 32);
         const hornfrontLEFT = new THREE.Mesh(faceGeometryHORNfrontLEFT, this.whiteMaterial);
         hornfrontLEFT.castShadow = true;
         hornfrontLEFT.receiveShadow = true;
@@ -207,7 +207,7 @@ class Snake {
         faceUP.add(hornfrontLEFT);
 
 
-        const faceGeometryHORNfrontBIG = new THREE.ConeGeometry(0.11, 0.50, 32);
+        const faceGeometryHORNfrontBIG = new THREE.ConeBufferGeometry(0.11, 0.50, 32);
         const hornfrontBIG = new THREE.Mesh(faceGeometryHORNfrontBIG, this.whiteMaterial);
         hornfrontBIG.castShadow = true;
         hornfrontBIG.receiveShadow = true;
@@ -216,14 +216,14 @@ class Snake {
         faceDOWN.add(hornfrontBIG);
 
         // Tooths        
-        const toothGeometryRIGHT = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryRIGHT = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothRIGHT = new THREE.Mesh(toothGeometryRIGHT, this.whiteMaterial);
         toothRIGHT.castShadow = true;
         toothRIGHT.receiveShadow = true;
         toothRIGHT.position.set(0.4, 0.2, 0.5);
         faceDOWN.add(toothRIGHT);
 
-        const toothGeometryLEFT = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryLEFT = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothLEFT = new THREE.Mesh(toothGeometryLEFT, this.whiteMaterial);
         toothLEFT.castShadow = true;
         toothLEFT.receiveShadow = true;
@@ -231,14 +231,14 @@ class Snake {
         faceDOWN.add(toothLEFT);
 
 
-        const toothGeometryRIGHT1 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryRIGHT1 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothRIGHT1 = new THREE.Mesh(toothGeometryRIGHT1, this.whiteMaterial);
         toothRIGHT1.castShadow = true;
         toothRIGHT1.receiveShadow = true;
         toothRIGHT1.position.set(0.4, 0.2, 0.7);
         faceDOWN.add(toothRIGHT1);
 
-        const toothGeometryLEFT1 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryLEFT1 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothLEFT1 = new THREE.Mesh(toothGeometryLEFT1, this.whiteMaterial);
         toothLEFT1.castShadow = true;
         toothLEFT1.receiveShadow = true;
@@ -247,14 +247,14 @@ class Snake {
 
 
 
-        const toothGeometryRIGHT2 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryRIGHT2 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothRIGHT2 = new THREE.Mesh(toothGeometryRIGHT2, this.whiteMaterial);
         toothRIGHT2.castShadow = true;
         toothRIGHT2.receiveShadow = true;
         toothRIGHT2.position.set(0.4, 0.2, 0.9);
         faceDOWN.add(toothRIGHT2);
 
-        const toothGeometryLEFT2 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryLEFT2 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothLEFT2 = new THREE.Mesh(toothGeometryLEFT2, this.whiteMaterial);
         toothLEFT2.castShadow = true;
         toothLEFT2.receiveShadow = true;
@@ -262,21 +262,21 @@ class Snake {
         faceDOWN.add(toothLEFT2);
 
 
-        const toothGeometryRIGHT3 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryRIGHT3 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothRIGHT3 = new THREE.Mesh(toothGeometryRIGHT3, this.whiteMaterial);
         toothRIGHT3.castShadow = true;
         toothRIGHT3.receiveShadow = true;
         toothRIGHT3.position.set(0.2, 0.2, 0.9);
         faceDOWN.add(toothRIGHT3);
 
-        const toothGeometryLEFT3 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryLEFT3 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothLEFT3 = new THREE.Mesh(toothGeometryLEFT3, this.whiteMaterial);
         toothLEFT3.castShadow = true;
         toothLEFT3.receiveShadow = true;
         toothLEFT3.position.set(-0.2, 0.2, 0.9);
         faceDOWN.add(toothLEFT3);
 
-        const toothGeometryLEFTCENTRAL = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryLEFTCENTRAL = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothLEFTCENTRAL = new THREE.Mesh(toothGeometryLEFTCENTRAL, this.whiteMaterial);
         toothLEFTCENTRAL.castShadow = true;
         toothLEFTCENTRAL.receiveShadow = true;
@@ -285,7 +285,7 @@ class Snake {
 
 
 
-        const toothGeometryRIGHTUP = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryRIGHTUP = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothRIGHTUP = new THREE.Mesh(toothGeometryRIGHTUP, this.whiteMaterial);
         toothRIGHTUP.castShadow = true;
         toothRIGHTUP.receiveShadow = true;
@@ -293,7 +293,7 @@ class Snake {
         toothRIGHTUP.rotation.set(3.14, 0, 0);
         faceUP.add(toothRIGHTUP);
 
-        const toothGeometryLEFTUP = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryLEFTUP = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothLEFTUP = new THREE.Mesh(toothGeometryLEFTUP, this.whiteMaterial);
         toothLEFTUP.castShadow = true;
         toothLEFTUP.receiveShadow = true;
@@ -302,7 +302,7 @@ class Snake {
         faceUP.add(toothLEFTUP);
 
 
-        const toothGeometryRIGHTUP1 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryRIGHTUP1 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothRIGHTUP1 = new THREE.Mesh(toothGeometryRIGHTUP1, this.whiteMaterial);
         toothRIGHTUP1.castShadow = true;
         toothRIGHTUP1.receiveShadow = true;
@@ -310,7 +310,7 @@ class Snake {
         toothRIGHTUP1.rotation.set(3.14, 0, 0);
         faceUP.add(toothRIGHTUP1);
 
-        const toothGeometryLEFTUP1 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryLEFTUP1 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothLEFTUP1 = new THREE.Mesh(toothGeometryLEFTUP1, this.whiteMaterial);
         toothLEFTUP1.castShadow = true;
         toothLEFTUP1.receiveShadow = true;
@@ -320,7 +320,7 @@ class Snake {
 
 
 
-        const toothGeometryRIGHTUP2 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryRIGHTUP2 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothRIGHTUP2 = new THREE.Mesh(toothGeometryRIGHTUP2, this.whiteMaterial);
         toothRIGHTUP2.castShadow = true;
         toothRIGHTUP2.receiveShadow = true;
@@ -328,7 +328,7 @@ class Snake {
         toothRIGHTUP2.rotation.set(3.14, 0, 0);
         faceUP.add(toothRIGHTUP2);
 
-        const toothGeometryLEFTUP2 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryLEFTUP2 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothLEFTUP2 = new THREE.Mesh(toothGeometryLEFTUP2, this.whiteMaterial);
         toothLEFTUP2.castShadow = true;
         toothLEFTUP2.receiveShadow = true;
@@ -337,7 +337,7 @@ class Snake {
         faceUP.add(toothLEFTUP2);
 
 
-        const toothGeometryRIGHTUP3 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryRIGHTUP3 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothRIGHTUP3 = new THREE.Mesh(toothGeometryRIGHTUP3, this.whiteMaterial);
         toothRIGHTUP3.castShadow = true;
         toothRIGHTUP3.receiveShadow = true;
@@ -345,7 +345,7 @@ class Snake {
         toothRIGHTUP3.rotation.set(3.14, 0, 0);
         faceUP.add(toothRIGHTUP3);
 
-        const toothGeometryLEFTUP3 = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryLEFTUP3 = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothLEFTUP3 = new THREE.Mesh(toothGeometryLEFTUP3, this.whiteMaterial);
         toothLEFTUP3.castShadow = true;
         toothLEFTUP3.receiveShadow = true;
@@ -353,7 +353,7 @@ class Snake {
         toothLEFTUP3.rotation.set(3.14, 0, 0);
         faceUP.add(toothLEFTUP3);
 
-        const toothGeometryLEFTUPCENTRAL = new THREE.ConeGeometry(0.05, 0.2, 32);
+        const toothGeometryLEFTUPCENTRAL = new THREE.ConeBufferGeometry(0.05, 0.2, 32);
         const toothLEFTUPCENTRAL = new THREE.Mesh(toothGeometryLEFTUPCENTRAL, this.whiteMaterial);
         toothLEFTUPCENTRAL.castShadow = true;
         toothLEFTUPCENTRAL.receiveShadow = true;
@@ -361,7 +361,7 @@ class Snake {
         toothLEFTUPCENTRAL.rotation.set(3.14, 0, 0);
         faceUP.add(toothLEFTUPCENTRAL);
 
-        const tongueGeometry = new THREE.SphereGeometry(0.5, 3, 6, 1.2, 0.8, 2.5, 2.6);
+        const tongueGeometry = new THREE.SphereBufferGeometry(0.5, 3, 6, 1.2, 0.8, 2.5, 2.6);
         const tongue = new THREE.Mesh(tongueGeometry, this.redMaterial);
         tongue.castShadow = true;
         tongue.receiveShadow = true;
@@ -371,7 +371,7 @@ class Snake {
 
 
         // Eye  (children[0].childer[10 e 11])
-        const eyeGeometryRIGHT = new THREE.SphereGeometry(0.15, 0.15, 0.15);
+        const eyeGeometryRIGHT = new THREE.SphereBufferGeometry(0.15, 0.15, 0.15);
         const eyeRIGHT = new THREE.Mesh(eyeGeometryRIGHT, this.whiteMaterial);
         eyeRIGHT.castShadow = true;
         eyeRIGHT.receiveShadow = true;
@@ -379,7 +379,7 @@ class Snake {
         eyeRIGHT.rotation.set(1.65, 0, 0);
         head.add(eyeRIGHT);
 
-        const eyeGeometryLEFT = new THREE.SphereGeometry(0.15, 0.15, 0.15);
+        const eyeGeometryLEFT = new THREE.SphereBufferGeometry(0.15, 0.15, 0.15);
         const eyeLEFT = new THREE.Mesh(eyeGeometryLEFT, this.whiteMaterial);
         eyeLEFT.castShadow = true;
         eyeLEFT.receiveShadow = true;
@@ -388,14 +388,14 @@ class Snake {
         head.add(eyeLEFT);
 
         // Pupil 
-        const pupilGeometryRIGHT = new THREE.SphereGeometry(0.05, 0.05, 0.05);
+        const pupilGeometryRIGHT = new THREE.SphereBufferGeometry(0.05, 0.05, 0.05);
         const pupilRIGHT = new THREE.Mesh(pupilGeometryRIGHT, this.blackMaterial);
         pupilRIGHT.castShadow = true;
         pupilRIGHT.receiveShadow = true;
         pupilRIGHT.position.set(0.05, 0.15, 0);
         eyeRIGHT.add(pupilRIGHT);
 
-        const pupilGeometryLEFT = new THREE.SphereGeometry(0.05, 0.05, 0.05);
+        const pupilGeometryLEFT = new THREE.SphereBufferGeometry(0.05, 0.05, 0.05);
         const pupilLEFT = new THREE.Mesh(pupilGeometryLEFT, this.blackMaterial);
         pupilLEFT.castShadow = true;
         pupilLEFT.receiveShadow = true;
@@ -404,7 +404,7 @@ class Snake {
 
 
         // Nose 
-        const noseGeometryBIG = new THREE.BoxGeometry(0.4, 0.3, 2);
+        const noseGeometryBIG = new THREE.BoxBufferGeometry(0.4, 0.3, 2);
         const noseBIG = new THREE.Mesh(noseGeometryBIG, this.skinMaterial);
         noseBIG.castShadow = true;
         noseBIG.receiveShadow = true;
@@ -412,7 +412,7 @@ class Snake {
         faceUP.add(noseBIG);
 
 
-        const noseGeometryRIGHT = new THREE.CylinderGeometry(0.05, 0.05, 0.2, 8);
+        const noseGeometryRIGHT = new THREE.CylinderBufferGeometry(0.05, 0.05, 0.2, 8);
         const nosefaceRIGHT = new THREE.Mesh(noseGeometryRIGHT, this.blackMaterial);
         nosefaceRIGHT.castShadow = true;
         nosefaceRIGHT.receiveShadow = true;
@@ -420,7 +420,7 @@ class Snake {
         nosefaceRIGHT.rotation.set(1.65, 0, 0);
         noseBIG.add(nosefaceRIGHT);
 
-        const noseGeometryLEFT = new THREE.CylinderGeometry(0.05, 0.05, 0.2, 8);
+        const noseGeometryLEFT = new THREE.CylinderBufferGeometry(0.05, 0.05, 0.2, 8);
         const nosefaceLEFT = new THREE.Mesh(noseGeometryLEFT, this.blackMaterial);
         nosefaceLEFT.castShadow = true;
         nosefaceLEFT.receiveShadow = true;
@@ -440,7 +440,7 @@ class Snake {
         //TEXTURE
         var bodyTexture = new THREE.TextureLoader().load(skinFile);
 
-        var materiale = new THREE.MeshBasicMaterial({ map: bodyTexture });
+        var materiale = new THREE.MeshBasicMaterial({ map: bodyTexture  });
         var blockMesh = new THREE.Mesh(this.blockGeometry, materiale);
 
         blockMesh.castShadow = true;
@@ -459,8 +459,8 @@ class Snake {
         //TEXTURE
         var bodyTexture = new THREE.TextureLoader().load(skinFile);
 
-        var materiale = new THREE.MeshBasicMaterial({ map: bodyTexture });
-        if (!textureAttive) materiale = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffff00 });
+        var materiale = new THREE.MeshBasicMaterial({ map: bodyTexture  });
+        if (!textureAttive) materiale = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffff00  });
 
         var blockMesh = new THREE.Mesh(this.blockGeometry, materiale);
         blockMesh.castShadow = true;
@@ -796,6 +796,7 @@ class Snake {
                 */
 
                 default: console.log("")
+                break;
 
             }
         }
@@ -845,6 +846,7 @@ class Snake {
 
                 if (game.boxes[i].name == "sheepBB")
                     this.eatSheep();
+
                 if (game.boxes[i].name == "cloudBB")
                     this.length -= 2;
 

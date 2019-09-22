@@ -43,6 +43,7 @@ var river, floor, albero, directory, snake, duck, cloud, cloudsmall, sheep;
 var globalKeyPressed;
 var delta = 0;
 
+var palmas, plant, cactus;
 
 class Game {
     constructor() {
@@ -61,7 +62,6 @@ class Game {
         */
         this.scene.background = new THREE.Color(0x00);    // Dark black background
 
-
         this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 200);
         this.camera.lookAt(this.scene.position);
         this.camera.position.set(-10, 20, -25);
@@ -72,6 +72,7 @@ class Game {
         this.renderer.setSize(this.width, this.height);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.shadowMapSoft = true;
 
         document.body.appendChild(this.renderer.domElement);
 
@@ -93,6 +94,7 @@ class Game {
     }
 
     addLights() {
+        
         var spotLight = new THREE.SpotLight(0xDDDDDD, 0.5);
         spotLight.castShadow = true;
 
@@ -100,13 +102,16 @@ class Game {
         spotLight.position.set(10, 40, -20);
         spotLight.shadow.mapSize.width = 512;  // default
         spotLight.shadow.mapSize.height = 512; // default
+        spotLight.shadow.camera.near = 500;
+        spotLight.shadow.camera.far = 4000;
+        spotLight.shadow.camera.fov = 30;
         this.scene.add(spotLight);
 
         // Helper
         // const slh = new THREE.SpotLightHelper(spotLight);
         /// this.scene.add(slh);
 
-        const light = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.9);
+        const light = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.4);
         this.scene.add(light);
 
         // const lh = new THREE.HemisphereLightHelper(light);
@@ -115,6 +120,11 @@ class Game {
         var directLight = new THREE.DirectionalLight(0xffffff, 0.8);
         directLight.castShadow = true;
         directLight.position.set(10,10,10);
+        directLight.shadow.mapSize.width = 512;  // default
+        directLight.shadow.mapSize.height = 512; // default
+        directLight.shadow.camera.near = 500;
+        directLight.shadow.camera.far = 4000;
+        directLight.shadow.camera.fov = 30;
         this.scene.add(directLight);
 
         // const dlh1 = new THREE.DirectionalLightHelper(directLight1);
@@ -125,7 +135,7 @@ class Game {
         directLight2.position.set(-15.8, 5.2, 8);
         this.scene.add(directLight2);
         */
-        
+
     }
 
 
@@ -472,6 +482,15 @@ function main() {
     cloudsmall = new Cloudsmall(new THREE.Vector3(0, 12, 0));
     cloudsmall.build();
 
+    palmas = new Palmas(new THREE.Vector3(-20*Math.random(), 8, 20*Math.random()));
+    palmas.build();
+
+    plant = new Plant(new THREE.Vector3(15*Math.random(), 8, -20*Math.random()));
+    plant.build();
+
+    cactus = new Cactus(new THREE.Vector3(-18*Math.random(), 4, 18*Math.random()));
+    cactus.build();
+
     game.animate();
 }
 
@@ -512,6 +531,10 @@ var updateFunction = function () {
     sheep.update();
     cloud.update();
     cloudsmall.update();
+    
+    palmas.update();
+    plant.update();
+    cactus.update();
 
 
     gameOver();
