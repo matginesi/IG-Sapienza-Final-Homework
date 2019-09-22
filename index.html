@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset=utf-8>
+        <link rel="shortcut icon">
+        <title>IG-Project</title>
+        
+        <style>
+
+            canvas{
+                width: 720px;
+                height:  360px;
+                background: url('dg.jpg');
+                background-repeat: no-repeat;
+                background-size: cover;
+            }
+            
+
+            input[type=button] {
+                font-family: monospace;
+            }
+
+            .alignleft {
+                float: left;
+            }
+
+            .alignright {
+                float: right;
+            }
+
+            /* This stylesheet sets the width of all images to 100%: */
+            img {
+                width: 100%;
+            }
+
+            button.link {
+                background: transparent;
+                border: none;
+                color: darkred;
+                font-size: 0.9em;
+                z-index: 2;
+                text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+                position: absolute;
+                
+            }
+
+            button.link:hover {
+                color: orange;
+            }
+
+            .gametitle {
+                -moz-user-select: -moz-none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                -o-user-select: none;
+                user-select: none;
+                font-family: 'Font/Enterprise Bold';
+                background: transparent;
+                border: none;
+                color: orange;
+                font-size: 4em;
+                z-index: 2;
+                text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+                position: absolute;
+
+            }
+
+            .gamevariants {
+                -moz-user-select: -moz-none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                -o-user-select: none;
+                user-select: none;
+                font-family: 'Font/Enterprise Bold';
+                visibility: hidden;
+                background: transparent;
+                border: none;
+                color: orangered;
+                font-size: 0.4em;
+                z-index: 2;
+                text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+                position: absolute;
+
+            }
+
+
+            #Mars {
+                top: 50%;
+                left: 5%;
+                text-shadow: -1px 4px black;
+
+            }
+
+            #Dark {
+                top: 50%;
+                right: 3%;
+                text-shadow: 4px 4px black;
+
+            }
+
+            #Landscape {
+                top: 50%;
+                left: 43%;
+                text-shadow: 0px 5px black;
+
+            }
+
+            #Dragon {
+                top: 0%;
+                left: 38%;
+                font-style: italic;
+
+            }
+
+            #GameoverTitle {
+                font-family: 'Font/Enterprise Bold';
+                visibility: hidden;
+                color: red;
+                transform: scale(1.5);
+                top: 40%;
+                left: 36.5%;
+            }
+
+            #Select {
+                top: 65%;
+                left: 5%;
+                color: white;
+                font-size: 2.5em;
+                font-style: normal;
+            }
+
+            #Commands {
+                top: 87%;
+                left: 5%;
+                color: pink;
+                font-size: 1.5em;
+            }
+
+            #Score {
+                top: 8%;
+                left: 5%;
+                color: red;
+                font-size: 1.5em;
+            }
+            #Length{
+                top: 14%;
+                left: 5%;
+                color: red;
+                font-size: 1.5em;
+            }
+            #Reset{
+                top: 60%;
+                right: 45%;
+                visibility: hidden;
+            }
+            
+           	#Music{
+           		top: 10%;
+                right: 10%;
+                visibility: hidden;
+           	}
+            
+
+            @-moz-document url-prefix() {
+                #Gameover {
+                    top: 100%;
+
+                }
+            }
+
+        </style>
+    </head>
+    <body>
+    
+
+    <!-- Titolo e immagine associata -->
+
+    <button class="link alignleft" style="font-size:2.5em;" id="Mars">The Red Planet</button>
+    <img src="./textures/intro-mars.png" style="position :absolute; top:18.0em; left:4.1%; width: 20%;"id="intro-mars">
+
+
+    <button class="link alignright" style="font-size:2.5em;" id="Dark">The Dark World</button>
+    <img src="./textures/intro-dark.png" style="position :absolute; top:15em; left:76%; width: 23.5%;"id="intro-dark" >
+
+
+    <button class="link alignleft" style="font-size:2.5em;" id="Landscape">The Shire</button>
+    <img src="./textures/intro-earth.png" style="position :absolute; top:16em; left:38%; width: 22.5%;"id="intro-earth">
+
+    <button onclick= "restart()" class="link alignleft" style="font-size:3em;" id="Reset">Restart</button>
+    
+
+    <!-- Nome del gioco e logo -->
+
+    <p class="gametitle" id="Dragon"> DragonSnake
+        <img src="./textures/intro/dragon.png" style="position :absolute; top:0.0em; left:110%; width: 28%;">
+    </p>
+
+    <p class="gametitle" id="Select" style="position :absolute; top:5em; left:25%; font-size: 2em "> The Dragon is ready, select a world to start our travel!
+    </p>
+    <p class="gametitle" id="Commands"> Commands:
+        use [W][S][A][D] + [Z][X] to go up in the sky
+    </p>
+    <!-- use [W][S][A][D] + [Z][X] to go up in the sky -->
+
+    <p class="gamevariants" id="Score">Score: 0</p>
+    <p class="gamevariants" id="Length">Length: 0</p>
+
+    <p class="gametitle" id="Music"style="position :absolute; top:5em; font-size: 1.5em ">♫ ♫ ♫ Music is ON AIR ♫ ♫ ♫</p>
+
+    <p class="gametitle" id="GameoverTitle"> GAME OVER 
+        <img src="./textures/dead.png" style="position :absolute; top:-3em; left:25%; width: 50%;">
+    </p>
+
+    <script src="js/Stats.js"></script>
+    <script src="js/perlin.js"></script>
+    <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <script src="js/simplex-noise.js"></script>
+
+    <script src="map.js"></script>
+    <script src="utils.js"></script>
+    <script src="snake.js"></script>
+    <script src="food.js"></script>
+    <script src="egg.js"></script>
+    <script src="duck.js"></script>
+    <script src="sheep.js"></script>
+    <script src="cloud.js"></script>
+    <script src="cloudsmall.js"></script>
+    <script src="tree.js"></script>
+    <script src="app.js"></script>
+
+    
+
+
+    </body>
+
+</html>
